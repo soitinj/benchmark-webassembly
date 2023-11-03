@@ -1,5 +1,9 @@
-# Getting Started with Create React App
+# React WebAssembly Benchmark
 
+Benchmark and compare different algorithms/calculations using:
+* Native TypeScript
+* AssemblyScript into WebAssembly
+* C++ into WebAssembly
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
