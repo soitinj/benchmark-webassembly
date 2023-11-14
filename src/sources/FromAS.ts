@@ -1,13 +1,19 @@
+import { editDistance as ed, approximatePi as ap, fibonacci as fb} from "./AS/release.js";
 
 export namespace FromAS {
 
     export const approximatePi = (iterations: number) => {
-        console.log('fromAS')
-        let piApproximation = 0;
-        for (let i = 0; i < iterations; i++) {
-            piApproximation += 4 * Math.pow(-1, i) / (2 * i + 1);
-        }
-        return piApproximation;
-    }
+        console.log('fromAS');
+        return ap(iterations);
+    };
 
+    export const fibonacci = (n: number) => {
+        console.log('fromAS');
+        return fb(n);
+    };
+
+    export const editDistance = (a: string, b: string) => {
+        console.log('fromAS');
+        return ed(a, b);
+    };
 }

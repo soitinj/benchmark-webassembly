@@ -4,7 +4,15 @@ import { useState } from 'react';
 import React from "react";
 
 
-const BenchmarkDropdown = ({ calcName }: {calcName: string} ) => {
+const BenchmarkDropdown = ({ 
+  calcName,
+  returnSource,
+  setReturnSource,
+}: {
+  calcName: string;
+  returnSource: { [key: string]: string };
+  setReturnSource: React.Dispatch<React.SetStateAction<{ [key: string]: string }>>;
+} ) => {
   // Just typescript things
   const options: Source[] = Object.keys(Source).map((src: string) => Source[src as keyof typeof Source]);
 
@@ -12,7 +20,10 @@ const BenchmarkDropdown = ({ calcName }: {calcName: string} ) => {
 
   const handleSelect = (eventKey: string | null) => {
     setSource(eventKey as string);
-  }
+    
+    const newReturn = {...returnSource, [calcName]: source}
+    setReturnSource(newReturn);
+  };
 
   return (
     <React.Fragment>
