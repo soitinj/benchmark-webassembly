@@ -1,5 +1,3 @@
-/* global WebAssembly */
-
 async function instantiate(module, imports = {}) {
   const adaptedImports = {
     env: Object.assign(Object.create(globalThis), imports.env || {}, {
@@ -14,20 +12,36 @@ async function instantiate(module, imports = {}) {
           throw Error(`${message} in ${fileName}:${lineNumber}:${columnNumber}`);
         })();
       },
+      seed() {
+        // ~lib/builtins/seed() => f64
+        return (() => {
+          // @external.js
+          return Date.now() * Math.random();
+        })();
+      },
     }),
   };
   const { exports } = await WebAssembly.instantiate(module, adaptedImports);
   const memory = exports.memory || imports.env.memory;
   const adaptedExports = Object.setPrototypeOf({
-    editDistance(a, b) {
-      // assembly/index/editDistance(~lib/string/String, ~lib/string/String) => i32
+    fibonacci(n, runs) {
+      // assembly/index/fibonacci(i32, i32) => u64
+      return BigInt.asUintN(64, exports.fibonacci(n, runs));
+    },
+    editDistance(a, b, runs) {
+      // assembly/index/editDistance(~lib/string/String, ~lib/string/String, i32) => i32
       a = __retain(__lowerString(a) || __notnull());
       b = __lowerString(b) || __notnull();
       try {
-        return exports.editDistance(a, b);
+        return exports.editDistance(a, b, runs);
       } finally {
         __release(a);
       }
+    },
+    mersiennePrimes(upTo, tests) {
+      // assembly/index/mersiennePrimes(u64, i32) => u64
+      upTo = upTo || 0n;
+      return BigInt.asUintN(64, exports.mersiennePrimes(upTo, tests));
     },
   }, exports);
   function __liftString(pointer) {
@@ -74,14 +88,20 @@ async function instantiate(module, imports = {}) {
 }
 export const {
   memory,
+  __new,
+  __pin,
+  __unpin,
+  __collect,
+  __rtti_base,
   approximatePi,
   fibonacci,
   editDistance,
+  editDistanceNoDataTransfer,
+  mersiennePrimes,
 } = await (async url => instantiate(
   await (async () => {
     try { return await globalThis.WebAssembly.compileStreaming(globalThis.fetch(url)); }
     catch { return globalThis.WebAssembly.compile(await (await import("node:fs/promises")).readFile(url)); }
   })(), {
   }
-// eslint-disable-next-line no-undef
 ))(new URL("release.wasm", import.meta.url));

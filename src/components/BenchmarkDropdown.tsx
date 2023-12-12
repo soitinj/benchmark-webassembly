@@ -2,16 +2,18 @@ import Dropdown from "react-bootstrap/Dropdown";
 import Source from '../sources/Source';
 import { useState } from 'react';
 import React from "react";
+import { FromC } from "../sources/FromC";
+import { FromTS } from "../sources/FromTS";
+import { FromAS } from "../sources/FromAS";
+import { Col } from "react-bootstrap";
 
 
 const BenchmarkDropdown = ({ 
   calcName,
-  returnSource,
-  setReturnSource,
+  calcs,
 }: {
   calcName: string;
-  returnSource: { [key: string]: string };
-  setReturnSource: React.Dispatch<React.SetStateAction<{ [key: string]: string }>>;
+  calcs: { [key: string]: any };
 } ) => {
   // Just typescript things
   const options: Source[] = Object.keys(Source).map((src: string) => Source[src as keyof typeof Source]);
@@ -20,24 +22,33 @@ const BenchmarkDropdown = ({
 
   const handleSelect = (eventKey: string | null) => {
     setSource(eventKey as string);
-    
-    const newReturn = {...returnSource, [calcName]: source}
-    setReturnSource(newReturn);
+    switch(eventKey) {
+      case 'AssemblyScript':
+          calcs[calcName] = FromAS[calcName as keyof typeof FromAS];
+          break;
+      case 'C++':
+          calcs[calcName] = FromC[calcName as keyof typeof FromC];
+          break;
+      case 'TypeScript':
+          calcs[calcName] = FromTS[calcName as keyof typeof FromTS];
+          break;
+      default:
+          break;
+    }
+    console.log(`Calculation ${calcName}: ${eventKey}`);
   };
 
   return (
-    <React.Fragment>
-      <span className="text-light">Calculation: {calcName}</span>
+    <Col xs={3}>
       <Dropdown onSelect={handleSelect}>
-        <Dropdown.Toggle variant="success" id="dropdown-calc">
+        <Dropdown.Toggle className="mt-1 mb-1" variant="success" id="dropdown-calc">
           {source}
         </Dropdown.Toggle>
-
         <Dropdown.Menu>
           {options.map((opt: Source) => { return <Dropdown.Item eventKey={opt} key={opt} >{opt}</Dropdown.Item> })}
         </Dropdown.Menu>
       </Dropdown>
-    </React.Fragment>
+    </Col>
   )
 };
 

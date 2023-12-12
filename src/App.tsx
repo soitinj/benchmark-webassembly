@@ -1,13 +1,5 @@
-import { FromC } from './sources/FromC'
-import { FromAS } from './sources/FromAS'
-import { FromTS } from './sources/FromTS'
 import CalcForm from './components/CalcForm'
 import './App.css';
-
-const algs: { [key: string]: any } = {
-    
-}
-
 
 function App() {
     return (
